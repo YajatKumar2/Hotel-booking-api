@@ -10,10 +10,12 @@ import { sendBookingConfirmation } from '../services/email.service';
 /**
  * Create a new booking (Guest only)
  */
+// ... existing imports ...
+
 export const createBooking = (req: Request, res: Response) => {
   try {
     const { roomId, startDate, endDate, guestInfo } = req.body;
-    const userId = req.user!.id; // We know user exists from 'authenticate' middleware
+    const userId = req.user!.id;
 
     // 1. Basic validation
     if (!roomId || !startDate || !endDate || !guestInfo) {
@@ -54,29 +56,20 @@ export const createBooking = (req: Request, res: Response) => {
       endDate: endDateObj,
       guestInfo,
       totalPrice,
-      // We set to PENDING. A payment step would change this to CONFIRMED.
-      // For this project, we'll confirm it immediately.
-      status: BookingStatus.CONFIRMED, // Simulate successful payment
+      
+      // --- CHANGE 1: Set status to PENDING ---
+      // We no longer confirm it immediately. We wait for payment.
+      status: BookingStatus.PENDING, 
+      
       createdAt: new Date(),
     };
 
     // 6. "Save" to our mock DB
     bookings.push(newBooking);
-    
-    // 7. --- NEW: Send confirmation email ---
-    // We do this *after* saving, but *before* sending the response.
-    // We use .catch() so that if the email fails, it doesn't crash the
-    // entire booking request. It just logs the error.
 
-    // We need the user's name/email. We can get it from guestInfo.
-    const userForEmail = {
-        name: guestInfo.name,
-        email: guestInfo.email,
-    };
-
-    sendBookingConfirmation(userForEmail, newBooking).catch((err) => {
-        console.error('Email failed to send:', err);
-    });
+    // --- CHANGE 2: REMOVED EMAIL LOGIC ---
+    // We deleted the sendBookingConfirmation() code from here.
+    // We will move it to the Payment Controller later.
 
     // 7. Send success response
     res.status(201).json(newBooking);

@@ -4,7 +4,7 @@ import roomRoutes from './routes/room.routes';
 import bookingRoutes from './routes/booking.routes';
 import { authenticate, checkRole } from './middleware/auth.middleware';
 import { UserRole } from './models/enums';
-
+import paymentRoutes from './routes/payment.routes';
 
 // Create an Express application
 const app = express();
@@ -18,6 +18,8 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // --- Test Routes ---
 
